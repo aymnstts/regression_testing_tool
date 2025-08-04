@@ -1,0 +1,65 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>CSV Regression Test Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .summary { background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                .pass { color: green; }
+                .fail { color: red; }
+                .warning { color: orange; }
+                .file-report { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; }
+                .issue { margin: 5px 0; padding: 5px; background-color: #f9f9f9; }
+                .issue.pass { border-left: 4px solid green; }
+                .issue.warning { border-left: 4px solid orange; }
+                .issue.fail { border-left: 4px solid red; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                .info { background-color: #e6f3ff; }
+            </style>
+        </head>
+        <body>
+            <h1>CSV Regression Test Report</h1>
+            <div class="summary">
+                <h2>Summary</h2>
+        
+                <p>Total Files: 5</p>
+                <p class="pass">Passed: 5</p>
+                <p class="fail">Failed: 0</p>
+                <p class="warning">Warnings: 0</p>
+                <p>Generated: 2025-07-14 10:44:02</p>
+            </div>
+        
+            <div class="file-report">
+                <h2 class="pass">CartUnload.xlsx - PASS</h2>
+                <p>Issues Found: 1</p>
+            <h3>Issues:</h3>
+                    <div class="issue pass">
+                        <strong>row_count_increase</strong>: Generated file has 1 more rows than reference (103 vs 102)
+                    </div>
+                    </div>
+            <div class="file-report">
+                <h2 class="pass">CashRecov.xlsx - PASS</h2>
+                <p>Issues Found: 1</p>
+            <h3>Issues:</h3>
+                    <div class="issue pass">
+                        <strong>row_count_increase</strong>: Generated file has 1 more rows than reference (17 vs 16)
+                    </div>
+                    </div>
+            <div class="file-report">
+                <h2 class="pass">crewCommissionsReport.xlsx - PASS</h2>
+                <p>Issues Found: 0</p>
+            </div>
+            <div class="file-report">
+                <h2 class="pass">TransactionsPaymentReportUAE.xlsx - PASS</h2>
+                <p>Issues Found: 0</p>
+            </div>
+            <div class="file-report">
+                <h2 class="pass">UAETransactionsReport.xlsx - PASS</h2>
+                <p>Issues Found: 0</p>
+            </div>
+        </body>
+        </html>
+        

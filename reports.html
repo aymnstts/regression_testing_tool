@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Reports</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #5a67d8;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .reports-filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .reports-filters input,
+        .reports-filters select {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .reports-filters input:focus,
+        .reports-filters select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .reports-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .report-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .report-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .report-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-icon {
+            font-size: 2rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .report-details h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .report-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .report-meta span {
+            background: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .file-type {
+            background: #667eea !important;
+            color: white !important;
+        }
+
+        .report-description {
+            color: #718096;
+            font-style: italic;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .preview-btn {
+            background: #3182ce;
+            color: white;
+        }
+
+        .preview-btn:hover {
+            background: #2c5282;
+        }
+
+        .download-btn {
+            background: #38a169;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #2f855a;
+        }
+
+        .analyze-btn {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .analyze-btn:hover {
+            background: #b7791f;
+        }
+
+        .no-reports {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .error-content {
+            text-align: center;
+            padding: 3rem;
+            color: #e53e3e;
+        }
+
+        .retry-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .retry-btn:hover {
+            background: #c53030;
+        }
+
+        /* Modal styles for preview and analysis */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Excel preview styles */
+        .excel-preview-modal {
+            min-width: 80vw;
+        }
+
+        .sheets-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .sheet-tab {
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sheet-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .sheet-content {
+            display: none;
+        }
+
+        .sheet-content.active {
+            display: block;
+        }
+
+        .sheet-info {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .table-container {
+            overflow: auto;
+            max-height: 400px;
+        }
+
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .excel-table th,
+        .excel-table td {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .excel-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .table-note {
+            margin-top: 1rem;
+            color: #718096;
+            font-style: italic;
+        }
+
+        /* Analysis modal styles */
+        .analysis-modal-content {
+            min-width: 60vw;
+        }
+
+        .analysis-summary {
+            margin-bottom: 2rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .summary-item label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .summary-item span {
+            color: #2d3748;
+        }
+
+        .sheet-analysis {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .sheet-analysis h4 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .sheet-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .columns-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .column-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .reports-filters {
+                flex-direction: column;
+            }
+
+            .reports-filters input,
+            .reports-filters select {
+                min-width: 100%;
+            }
+
+            .report-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reference Reports</h1>
+        <p>Browse and analyze your reference reports</p>
+        <button onclick="testAPI()">Test API Connection</button>
+    </div>
+
+    <div class="container">
+        <button class="back-btn" onclick="">← Back to Main Page</button>
+        
+        <div id="reportsLoading" class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading reports...</p>
+        </div>
+
+        <div id="reportsContainer" style="display: none;">
+            <div class="reports-filters">
+                <input type="text" id="reportSearch" placeholder="Search reports..." onkeyup="filterReports()">
+                <select id="reportTypeFilter" onchange="filterReports()">
+                    <option value="">All Types</option>
+                    <option value="xlsx">Excel (.xlsx)</option>
+                    <option value="xls">Excel (.xls)</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div id="reportsList" class="reports-list"></div>
+        </div>
+
+        <div id="reportsError" style="display: none;" class="error-content">
+            <p>Failed to load reports. Please try again.</p>
+            <button onclick="loadAndDisplayReports()" class="retry-btn">Retry</button>
+        </div>
+    </div>
+
+    <script>
+function getReportIcon(extension) {
+    switch(extension.toLowerCase()) {
+        case 'xlsx':
+        case 'xls':
+            return '📊';
+        case 'csv':
+            return '📋';
+        default:
+            return '📄';
+    }
+}
+        // Remove the testServerConnection function entirely
+function handleAPIError(response, defaultMessage = 'An error occurred') {
+    if (!response.ok) {
+        return response.json().then(result => {
+            throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
+        }).catch(jsonError => {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        });
+    }
+    return response.json();
+}
+// Replace your testAPI function with this:
+async function testAPI() {
+    try {
+        console.log('Testing API connection to:', `${API_BASE_URL}/reference-reports`);
+
+        const response = await fetch(`${API_BASE_URL}/reference-reports`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Status:', response.status);
+        console.log('Status Text:', response.statusText);
+        console.log('Headers:', [...response.headers.entries()]);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        console.log('Raw response:', text);
+        
+        let data;
+        try {
+            data = JSON.parse(text);
+            console.log('Parsed data:', data);
+        } catch (parseError) {
+            console.error('Failed to parse JSON:', parseError);
+            alert('Server returned invalid JSON: ' + text);
+            return;
+        }
+        
+        alert('API Response: ' + JSON.stringify(data, null, 2));
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    }
+}
+        let referenceReports = [];
+
+// Configuration
+    const API_BASE_URL = 'http://localhost:5000/api';
+    console.log('API_BASE_URL:', API_BASE_URL);
+
+       document.addEventListener('DOMContentLoaded', function() {
+            
+
+    const reportsLink = document.getElementById('reportsLink');
+    if (reportsLink) {
+        reportsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showReportsModal();
+        });
+    }
+});
+
+// Global variable to store reference reports
+
+// Function to load Excel reports from reference-files folder
+async function loadReferenceReports() {
+    try {
+        console.log('Fetching from:', `${API_BASE_URL}/reference-reports`);
+        
+        const response = await fetch(`${API_BASE_URL}/reference-reports`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+
+        
+        const result = await handleAPIError(response);
+        console.log('API Response:', result);
+        
+        if (result.success && result.reports) {
+            const processedReports = result.reports.map(report => ({
+                ...report,
+                description: report.description || `${report.extension.toUpperCase()} file`
+            }));
+            
+            referenceReports = processedReports;
+            console.log('Processed reports:', referenceReports);
+            return referenceReports;
+        } else {
+            throw new Error(result.error || 'No reports found');
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+        throw new Error(`Failed to load reports: ${error.message}`);
+    }
+}
+// Add this function if it doesn't exist
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Add these functions if they don't exist
+function showError(message) {
+    console.error(message);
+    // You can replace this with your existing error display function
+    alert('Error: ' + message);
+}
+
+function showSuccess(message) {
+    console.log(message);
+    // You can replace this with your existing success display function
+    alert('Success: ' + message);
+}
+// Function to display reports modal
+function showReportsModal() {
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    modalOverlay.innerHTML = `
+        <div class="modal-content reports-modal">
+            <div class="modal-header">
+                <h2>Reference Reports</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="reportsLoading" class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading reports...</p>
+                </div>
+                <div id="reportsContainer" style="display: none;">
+                    <div class="reports-filters">
+                        <input type="text" id="reportSearch" placeholder="Search reports..." onkeyup="filterReports()">
+                        <select id="reportTypeFilter" onchange="filterReports()">
+                            <option value="">All Types</option>
+                            <option value="xlsx">Excel (.xlsx)</option>
+                            <option value="xls">Excel (.xls)</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <div id="reportsList" class="reports-list"></div>
+                </div>
+                <div id="reportsError" style="display: none;" class="error-content">
+                    <p>Failed to load reports. Please try again.</p>
+                    <button onclick="loadAndDisplayReports()" class="retry-btn">Retry</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+    
+    // Load and display reports
+    loadAndDisplayReports();
+}
+
+
+// Function to load and display reports in modal
+async function loadAndDisplayReports() {
+    // Check if we're in modal or direct page mode
+    const isModal = document.querySelector('.modal-overlay') !== null;
+    
+    let loadingDiv, containerDiv, errorDiv;
+    
+    if (isModal) {
+        loadingDiv = document.querySelector('.modal-overlay #reportsLoading');
+        containerDiv = document.querySelector('.modal-overlay #reportsContainer');
+        errorDiv = document.querySelector('.modal-overlay #reportsError');
+    } else {
+        loadingDiv = document.getElementById('reportsLoading');
+        containerDiv = document.getElementById('reportsContainer');
+        errorDiv = document.getElementById('reportsError');
+    }
+    
+    // Show loading
+    if (loadingDiv) loadingDiv.style.display = 'block';
+    if (containerDiv) containerDiv.style.display = 'none';
+    if (errorDiv) errorDiv.style.display = 'none';
+    
+    try {
+        console.log('Starting to load reports...');
+        const reports = await loadReferenceReports();
+        console.log('Successfully loaded reports:', reports);
+        
+        if (!reports || reports.length === 0) {
+            console.log('No reports found');
+            if (errorDiv) {
+                errorDiv.innerHTML = `
+                    <p>No reports found in reference-files folder.</p>
+                    <button onclick="loadAndDisplayReports()" class="retry-btn">Retry</button>
+                `;
+                errorDiv.style.display = 'block';
+            }
+        } else {
+            console.log('Displaying reports list...');
+            displayReportsList(reports);
+            if (containerDiv) containerDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error in loadAndDisplayReports:', error);
+        if (errorDiv) {
+            errorDiv.innerHTML = `
+                <p>Error: ${error.message}</p>
+                <p>Check console for more details.</p>
+                <button onclick="loadAndDisplayReports()" class="retry-btn">Retry</button>
+            `;
+            errorDiv.style.display = 'block';
+        }
+    }
+    
+    if (loadingDiv) loadingDiv.style.display = 'none';
+}
+// Function to display reports list
+function displayReportsList(reports) {
+    const isModal = document.querySelector('.modal-overlay') !== null;
+    let reportsList;
+    
+    if (isModal) {
+        reportsList = document.querySelector('.modal-overlay #reportsList');
+    } else {
+        reportsList = document.getElementById('reportsList');
+    }
+    
+    if (!reportsList) {
+        console.error('Reports list element not found');
+        return;
+    }
+    
+    if (reports.length === 0) {
+        reportsList.innerHTML = '<p class="no-reports">No reports match your criteria.</p>';
+        return;
+    }
+    
+    reportsList.innerHTML = reports.map(report => {
+        const dateStr = new Date(report.modified).toLocaleDateString();
+        const canPreview = ['xlsx', 'xls', 'csv'].includes(report.extension);
+        const canAnalyze = ['xlsx', 'xls'].includes(report.extension);
+        
+        return `
+            <div class="report-item" data-type="${report.extension}" data-name="${report.name.toLowerCase()}">
+                <div class="report-info">
+                    <div class="report-icon">${getReportIcon(report.extension)}</div>
+                    <div class="report-details">
+                        <h4>${report.name}</h4>
+                        <p class="report-meta">
+                            <span class="file-type">${report.extension.toUpperCase()}</span>
+                            <span class="file-size">${formatFileSize(report.size)}</span>
+                            <span class="file-date">${dateStr}</span>
+                        </p>
+                        ${report.description ? `<p class="report-description">${report.description}</p>` : ''}
+                    </div>
+                </div>
+                <div class="report-actions">
+                    ${canPreview ? 
+                        `<button class="action-btn preview-btn" onclick="previewReport('${report.name}')">
+                            <span class="btn-icon">👁️</span> Preview
+                        </button>` : ''
+                    }
+                    <button class="action-btn download-btn" onclick="downloadReport('${report.name}')">
+                        <span class="btn-icon">💾</span> Download
+                    </button>
+                    ${canAnalyze ? 
+                        `<button class="action-btn analyze-btn" onclick="analyzeExcelReport('${report.name}')">
+                            <span class="btn-icon">📊</span> Analyze
+                        </button>` : ''
+                    }
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Function to filter reports based on search and type
+function filterReports() {
+    // Check if we're in modal or direct page mode
+    const isModal = document.querySelector('.modal-overlay') !== null;
+    
+    let searchInput, typeSelect, reportsList;
+    
+    if (isModal) {
+        searchInput = document.querySelector('.modal-overlay #reportSearch');
+        typeSelect = document.querySelector('.modal-overlay #reportTypeFilter');
+        reportsList = document.querySelector('.modal-overlay #reportsList');
+    } else {
+        searchInput = document.getElementById('reportSearch');
+        typeSelect = document.getElementById('reportTypeFilter');
+        reportsList = document.getElementById('reportsList');
+    }
+    
+    if (!searchInput || !typeSelect || !reportsList) {
+        console.error('Filter elements not found');
+        return;
+    }
+    
+    const searchTerm = searchInput.value.toLowerCase();
+    const typeFilter = typeSelect.value;
+    
+    const reportItems = reportsList.querySelectorAll('.report-item');
+    let visibleCount = 0;
+    
+    reportItems.forEach(item => {
+        const name = item.dataset.name;
+        const type = item.dataset.type;
+        
+        const matchesSearch = name.includes(searchTerm);
+        const matchesType = !typeFilter || type === typeFilter;
+        
+        if (matchesSearch && matchesType) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Update no results message
+    const noResults = reportsList.querySelector('.no-reports');
+    
+    if (visibleCount === 0 && !noResults) {
+        const noResultsDiv = document.createElement('p');
+        noResultsDiv.className = 'no-reports';
+        noResultsDiv.textContent = 'No reports match your criteria.';
+        reportsList.appendChild(noResultsDiv);
+    } else if (visibleCount > 0 && noResults) {
+        noResults.remove();
+    }
+}
+// Function to preview Excel report
+async function previewReport(reportName) {
+    try {
+        const fileExtension = reportName.split('.').pop().toLowerCase();
+        let endpoint;
+        
+        if (fileExtension === 'csv') {
+            endpoint = `${API_BASE_URL}/preview-csv/${encodeURIComponent(reportName)}`;
+        } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+            endpoint = `${API_BASE_URL}/preview-report/${encodeURIComponent(reportName)}`;
+        } else {
+            showError('Preview not available for this file type');
+            return;
+        }
+        
+        const response = await fetch(endpoint);
+        const result = await response.json();
+        
+        if (result.success) {
+            if (fileExtension === 'csv') {
+                showCSVPreviewModal(reportName, result.data);
+            } else {
+                showExcelPreviewModal(reportName, result.data);
+            }
+        } else {
+            showError('Failed to preview report: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error previewing report:', error);
+        showError('Network error while previewing report');
+    }
+}
+
+
+
+function showCSVPreviewModal(reportName, data) {
+    const previewModal = document.createElement('div');
+    previewModal.className = 'modal-overlay preview-modal';
+    previewModal.innerHTML = `
+        <div class="modal-content csv-preview-modal">
+            <div class="modal-header">
+                <h2>Preview: ${reportName}</h2>
+                <button class="close-modal" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="csv-preview-container">
+                    <div class="csv-info">
+                        <p><strong>Rows:</strong> ${data.totalRows} | <strong>Columns:</strong> ${data.totalColumns}</p>
+                    </div>
+                    <div class="table-container">
+                        <table class="csv-table">
+                            <thead>
+                                <tr>
+                                    ${data.headers.map(header => `<th>${header}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.slice(0, 100).map(row => `
+                                    <tr>
+                                        ${row.map(cell => `<td>${cell || ''}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        ${data.data.length > 100 ? 
+                            `<p class="table-note">Showing first 100 rows of ${data.totalRows} total rows</p>` : ''
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(previewModal);
+}
+
+// Function to show Excel preview modal
+function showExcelPreviewModal(reportName, data) {
+    const previewModal = document.createElement('div');
+    previewModal.className = 'modal-overlay preview-modal';
+    previewModal.innerHTML = `
+        <div class="modal-content excel-preview-modal">
+            <div class="modal-header">
+                <h2>Preview: ${reportName}</h2>
+                <button class="close-modal" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="excel-preview-container">
+                    <div class="sheets-tabs">
+                        ${data.sheets.map((sheet, index) => `
+                            <button class="sheet-tab ${index === 0 ? 'active' : ''}" 
+                                    onclick="showSheet(${index})">${sheet.name}</button>
+                        `).join('')}
+                    </div>
+                    <div class="sheets-content">
+                        ${data.sheets.map((sheet, index) => `
+                            <div class="sheet-content ${index === 0 ? 'active' : ''}" data-sheet="${index}">
+                                <div class="sheet-info">
+                                    <p><strong>Rows:</strong> ${sheet.rows} | <strong>Columns:</strong> ${sheet.columns}</p>
+                                </div>
+                                <div class="table-container">
+                                    <table class="excel-table">
+                                        <thead>
+                                            <tr>
+                                                ${sheet.headers.map(header => `<th>${header}</th>`).join('')}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${sheet.data.slice(0, 100).map(row => `
+                                                <tr>
+                                                    ${row.map(cell => `<td>${cell || ''}</td>`).join('')}
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                    ${sheet.data.length > 100 ? 
+                                        `<p class="table-note">Showing first 100 rows of ${sheet.data.length} total rows</p>` : ''
+                                    }
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(previewModal);
+}
+
+// Function to show specific sheet in preview
+function showSheet(sheetIndex) {
+    // Update tabs
+    document.querySelectorAll('.sheet-tab').forEach((tab, index) => {
+        tab.classList.toggle('active', index === sheetIndex);
+    });
+    
+    // Update content
+    document.querySelectorAll('.sheet-content').forEach((content, index) => {
+        content.classList.toggle('active', index === sheetIndex);
+    });
+}
+
+// Function to download report
+async function downloadReport(reportName) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/download-report/${encodeURIComponent(reportName)}`);
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = reportName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showSuccess(`Report "${reportName}" downloaded successfully!`);
+        } else {
+            const result = await response.json();
+            showError('Failed to download report: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error downloading report:', error);
+        showError('Network error while downloading report');
+    }
+}
+
+// Function to analyze Excel report
+async function analyzeExcelReport(reportName) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/analyze-report/${encodeURIComponent(reportName)}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            showAnalysisModal(reportName, result.analysis);
+        } else {
+            showError('Failed to analyze report: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error analyzing report:', error);
+        showError('Network error while analyzing report');
+    }
+}
+
+// Function to show analysis modal
+function showAnalysisModal(reportName, analysis) {
+    const analysisModal = document.createElement('div');
+    analysisModal.className = 'modal-overlay analysis-modal';
+    analysisModal.innerHTML = `
+        <div class="modal-content analysis-modal-content">
+            <div class="modal-header">
+                <h2>Analysis: ${reportName}</h2>
+                <button class="close-modal" onclick="closeAnalysisModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="analysis-container">
+                    <div class="analysis-summary">
+                        <h3>File Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <label>File Size:</label>
+                                <span>${formatFileSize(analysis.fileSize)}</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Sheets:</label>
+                                <span>${analysis.sheetsCount}</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Total Rows:</label>
+                                <span>${analysis.totalRows}</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Total Columns:</label>
+                                <span>${analysis.totalColumns}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sheets-analysis">
+                        <h3>Sheets Analysis</h3>
+                        ${analysis.sheets.map(sheet => `
+                            <div class="sheet-analysis">
+                                <h4>${sheet.name}</h4>
+                                <div class="sheet-stats">
+                                    <span class="stat">Rows: ${sheet.rows}</span>
+                                    <span class="stat">Columns: ${sheet.columns}</span>
+                                    <span class="stat">Data Types: ${sheet.dataTypes.join(', ')}</span>
+                                </div>
+                                ${sheet.columns && sheet.columns.length > 0 ? `
+                                    <div class="columns-info">
+                                        <h5>Columns:</h5>
+                                        <div class="columns-list">
+                                            ${sheet.columns.map(col => `
+                                                <span class="column-tag">${col}</span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(analysisModal);
+}
+
+// Function to close modal
+function closeModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Function to close preview modal
+function closePreviewModal() {
+    const previewModal = document.querySelector('.preview-modal');
+    if (previewModal) {
+        previewModal.remove();
+    }
+}
+
+// Function to close analysis modal
+function closeAnalysisModal() {
+    const analysisModal = document.querySelector('.analysis-modal');
+    if (analysisModal) {
+        analysisModal.remove();
+    }
+}
+
+// Event listener for Reports link in navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Find the Reports link and add event listener
+    const reportsLink = document.querySelector('a[href="#reports"]') || 
+                       document.querySelector('.nav-links a:nth-child(2)'); // Assuming Reports is the second link
+    
+    if (reportsLink) {
+        reportsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showReportsModal();
+        });
+    }
+});
+
+// Add keyboard shortcuts for modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+        closePreviewModal();
+        closeAnalysisModal();
+    }
+});
+
+// Click outside modal to close
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal();
+        closePreviewModal();
+        closeAnalysisModal();
+    }
+});
+
+    </script>
+</body>
+</html>
