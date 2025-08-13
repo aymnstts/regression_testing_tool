@@ -1156,11 +1156,14 @@ def get_file_info(filename):
 if __name__ == '__main__':
     # Initialize server
     initialize_server()
-    
+
+    # Get the port from Railway's environment variable or default to 5000
+    port = int(os.environ.get("PORT", 5000))
+
     # Run the Flask app
     app.run(
         host='0.0.0.0',
-        port=5000,
+        port=port,
         debug=True,
         threaded=True
     )
