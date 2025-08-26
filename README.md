@@ -24,11 +24,13 @@ source venv/bin/activate
 pip install flask flask-cors werkzeug pandas openpyxl numpy
 
 
-# 3-  run:  python app.py
+# 3-  run
+python app.py
 
 # notes
 
 once you run the project,you can upload the files needed to be tested,the file name of the file tested should be without the any dates for example: Cash_Sub not Cash_Sub291019
+Also if you added a new reference file,make sure the name is also in the same manner -> Reference_File.
 
 if you have any new reference file upload it before testing.
 
